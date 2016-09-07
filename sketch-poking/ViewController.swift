@@ -19,7 +19,18 @@ class ViewController: NSViewController {
         }
         let db = try! Connection(path)
         for row in try! db.prepare("SELECT * FROM metadata") {
-            print("key: \(row[0]), value: \(row[1])")
+            guard let key = row[0], let blob = row[1] as? Blob else {
+                continue
+            }
+            
+            let archive = NSData(bytes: blob.bytes, length: blob.bytes.count)
+            do {
+                var format = NSPropertyListFormat.BinaryFormat_v1_0
+                let value = try NSPropertyListSerialization.propertyListWithData(archive, options: .Immutable, format: &format)
+                print("key: \(key), value: \(value)")
+            } catch let e {
+                print(e)
+            }
             // id: Optional(2), email: Optional("betty@icloud.com")
             // id: Optional(3), email: Optional("cathy@icloud.com")
         }
