@@ -14,8 +14,10 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
-        let db = try! Connection("/Users/mnem/Desktop/sketch/some.sketch")
+        guard let path = NSBundle.mainBundle().pathForResource("some", ofType: "sketch") else {
+            assert(false, "Could not find path to sketch file")
+        }
+        let db = try! Connection(path)
         for row in try! db.prepare("SELECT * FROM metadata") {
             print("key: \(row[0]), value: \(row[1])")
             // id: Optional(2), email: Optional("betty@icloud.com")
